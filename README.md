@@ -1,7 +1,6 @@
 # Interactive-3D-Story-Creator
 
 ### Some tasks to be addressed next:
-- Add description to the project on GitHub mentioning that it is being built within Reynolds Journalism Institute Fellowship.
 - Add options for scrolling text like font color, size.
 - Explore NYT R&D ThreeBird in house scrolytelling app based on images provided (it is not open-source but can give some ideas about the features I can integrate further) 
 - Implement ability to load/import a spreadsheet containing text, frame number, and duration for how long the scrollable text remains visible in frames. This feature will help save time rather than writing/pasting in the editor. Journalists will be able to load their text instantly.
