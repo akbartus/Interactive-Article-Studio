@@ -63,11 +63,11 @@ Interactive Article Studio enables creators to build engaging narrative experien
 ## Technology Stack
 
 ### Frontend
-- **A-Frame**: WebVR framework for 3D scene rendering
+- **A-Frame**: XR framework for 3D scene rendering
 - **Three.js**: Underlying 3D graphics library
 - **Quill.js**: WYSIWYG rich text editor
 - **Troika Text**: High-quality 3D text rendering
-- **Custom Components**: Specialized A-Frame components for camera recording, scroll animation, and video control
+- **Custom Components**: Specialized A-Frame components for camera recording, scroll animation, video control, etc
 
 ### Backend
 - **Node.js + Express**: RESTful API server
