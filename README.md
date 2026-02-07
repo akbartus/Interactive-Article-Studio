@@ -126,4 +126,10 @@ The export system creates standalone HTML files with:
 - Add favicon/logo for the project.
 - Add server side code for storing and file management. 
 
-  
+  ## License
+
+MIT
+
+## Documentation
+
+Full documentation coming soon.
