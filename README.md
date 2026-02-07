@@ -107,22 +107,20 @@ The export system creates standalone HTML files with:
 - Safari 14.1+
 
 ## Upcoming changes:
-- Implement the ability to load/import a spreadsheet containing text, frame number, and duration for how long the scrollable text remains visible in frames.
+- Implement the ability to load/import a spreadsheet containing text, frame number, and duration for how long the scrollable text remains visible in frames
 - Add possibility to make change of slides based on click event (clicking on a button - left/right - makes camera jump from point A to point B)
 - Add Help menu item explaining how to's. Includes: creating tutorials on Gaussian Splat and GTLF files, compression methods, on using the studio + YouTube videos
 - Improve UI
-- Improved mobile version
+- Improve mobile version
 - CMS friendly versions of exported html code for WP, Joomla, and others
-- Multilanguage support.
-- MacOS version of the Studio.
-- Add new HotSpot types
+- Add multilanguage support
+- Release MacOS version of the Studio
+- Add new HotSpot types to Images & HotSpots
 - Add AI povered Text summarization feature (locally hosted + OpenAI API)
 -   
 
-  ## License
-
+## License
 MIT
 
 ## Documentation
-
-Full documentation coming soon.
+Full documentation coming soon
