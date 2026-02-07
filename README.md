@@ -108,6 +108,9 @@ The export system creates standalone HTML files with:
 
 ## Upcoming changes:
 - Add Studio performance options (in File Section) that impacts webGPU load and speed
+- Predefined camera paths selector
+- AI powered short video generation (Grok?)
+- Project autosave and options
 - Implement the ability to load/import a spreadsheet containing text, frame number, and duration for how long the scrollable text remains visible in frames
 - Add possibility to make change of slides based on click event (clicking on a button - left/right - makes camera jump from point A to point B)
 - Add Help menu item explaining how to's. Includes: creating tutorials on Gaussian Splat and GTLF files, compression methods, on using the studio + YouTube videos
