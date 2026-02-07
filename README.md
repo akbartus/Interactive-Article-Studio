@@ -1,12 +1,14 @@
 # Interactive Article Studio
-<p align="center">
-  <img src="img/1.jpg" height="400">
-  <img src="img/2.jpg" height="400">
-</p>
-<p align="center">
-  <img src="img/3.jpg" height="400">
-  <img src="img/4.jpg" height="400">
-</p>
+<table>
+  <tr>
+    <td><img src="img/1.jpg" title="screen capture" alt="screen capture" height="400"></td>
+    <td><img src="img/2.jpg" title="screen capture" alt="screen capture" height="400"></td>
+  </tr>
+  <tr>
+    <td><img src="img/3.jpg" title="screen capture" alt="screen capture" height="400"></td>
+    <td><img src="img/4.jpg" title="screen capture" alt="screen capture" height="400"></td>
+  </tr>
+</table>
 
 A powerful web-based tool for creating immersive, scroll-driven 3D storytelling experiences. Build interactive articles that combine rich text, 3D scenes, camera animations, hotspots, videos, and AI-generated audio.
 
