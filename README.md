@@ -18,7 +18,7 @@ A powerful web-based and application based (Windows, MacOS) tool for creating im
 
 ## Overview
 
-Interactive Article Studio enables creators to build engaging narrative experiences by seamlessly blending traditional article content with interactive 3D elements. The platform supports real-time camera path recording, text overlays synchronized with 3D animations, and multimedia integration—all exportable as standalone HTML files.
+Interactive Article Studio enables creators to build engaging narrative experiences by seamlessly blending traditional article content with interactive 3D elements. The platform. which is available in web and application forms, supports real-time camera path recording, text overlays synchronized with 3D animations, and multimedia integration—all exportable as standalone HTML files.
 
 ## Key Features
 
@@ -131,6 +131,7 @@ The export system creates standalone HTML files with:
 - Improve UI and start working on mobile version.
 - Add improved code exporting feature. Add CMS friendly version for WP, Joomla, etc.
 - Add multiple language support (preferably German, French and Spanish).
+- Adding MacOS version of the Studio.
 
   ## License
 
