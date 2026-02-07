@@ -14,7 +14,7 @@
   </tr>
 </table>
 
-A powerful web-based tool for creating immersive, scroll-driven 3D storytelling experiences. Build interactive articles that combine rich text, 3D scenes, camera animations, hotspots, videos, and AI-generated audio.
+A powerful web-based and application based (Windows, MacOS) tool for creating immersive, scroll-driven 3D storytelling experiences. Build interactive articles that combine rich text, 3D scenes, camera animations, hotspots, videos, and AI-generated audio.
 
 ## Overview
 
