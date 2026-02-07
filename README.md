@@ -78,13 +78,11 @@ Interactive Article Studio enables creators to build engaging narrative experien
 - **A-Frame**: Framework for 3D scene rendering
 - **Three.js**: Underlying 3D graphics library
 - **Quill.js**: WYSIWYG rich text editor
-- **Troika Text**: High-quality 3D text rendering
 - **Custom Components**: Specialized A-Frame components for camera recording, scroll animation, video control, etc
 
 ### Backend
 - **Node.js + Express**: Server logic
 - **SQLite3**: Lightweight project database for saving projects
-- **Multer**: Multipart file upload handling
 - **Kokoro.js**: Neural text-to-speech synthesis
 
 ## Export System
