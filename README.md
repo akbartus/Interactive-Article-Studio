@@ -85,7 +85,7 @@ The export system creates standalone HTML files with:
 - Interactive hotspot functionality
 - Frame-accurate video scrubbing
 - All custom A-Frame components inlined
-- Self-contained with no external dependencies (except A-Frame CDN)
+- Self-contained with no external dependencies
 
 ## Requirements
 
