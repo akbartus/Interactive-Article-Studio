@@ -118,7 +118,7 @@ The export system creates standalone HTML files with:
 - Add multilanguage support
 - Release MacOS version of the Studio
 - Add new HotSpot types to Images & HotSpots
-- Add AI povered Text summarization feature (locally hosted + OpenAI API)
+- Add AI povered Text summarization feature (locally hosted + OpenAI API), IN PROGRESS
 - Add Infographics section type to Article Builder and respective Infographics section   
 
 ## License
