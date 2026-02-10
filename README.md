@@ -83,7 +83,7 @@ Interactive Article Studio enables creators to build engaging narrative experien
 ### Backend
 - **Node.js + Express**: Server logic
 - **SQLite3**: Lightweight project database for saving projects
-- **Kokoro.js**: Neural text-to-speech synthesis
+- **Kokoro.js**: text-to-speech AI model
 
 ## Export System
 The export system creates standalone HTML files with:
