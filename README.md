@@ -116,6 +116,7 @@ The export system creates standalone HTML files with:
 
 ### UI & UX
 - Updated **Camera Paths** section design.
+- Updated Audio generation button.
 
 ### New Feature
 - Added a new camera path option: **Path Designer**.
