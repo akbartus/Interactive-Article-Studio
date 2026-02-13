@@ -139,6 +139,40 @@ The export system creates standalone HTML files with:
 - Safari 14.1+  
 
 
+## How to Use
+
+### Web Version
+
+1. Clone the repository:
+   ```sh
+   git clone <repository-url>
+  ```
+2. Navigate to the project directory:
+
+```sh
+cd interactive_article_studio
+```
+3. Install dependencies:
+```sh
+npm install
+```
+4. Start the server:
+```sh
+node server.js
+```
+5. Open your browser and go to:
+```
+http://localhost:3000/
+```
+### Windows
+1. Go to the Releases section of this repository.
+2. Download all three .zip files.
+3. Extract the downloaded files.
+4. Open the extracted folder.
+5. Run:
+```
+Interactive Article Studio.exe
+```
 
 ## **Changes in ver 0.0.2**
 
