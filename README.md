@@ -1,4 +1,4 @@
-# **Interactive Article Studio**
+# **Interactive Article Studio v0.0.2**
 
 <table>
   <tr>
