@@ -18,17 +18,17 @@
   </tr>
 </table>
 
----
+
 
 A powerful web-based and application-based (Windows, macOS) tool for creating immersive, scroll-driven 3D storytelling experiences. Build interactive articles that combine rich text, 3D scenes, camera animations, hotspots, videos, and AI-generated audio.
 
----
+
 
 ## Overview
 
 Interactive Article Studio enables creators to build engaging narrative experiences by seamlessly blending traditional article content with interactive 3D elements. The platform, available in both web and desktop application forms, supports real-time camera path recording, text overlays synchronized with 3D animations, and multimedia integration — all exportable as standalone HTML files.
 
----
+
 
 ## Key Features
 
@@ -39,7 +39,6 @@ Interactive Article Studio enables creators to build engaging narrative experien
 - **Scene Editor**: Intuitive transform controls (translate, rotate, scale) with visual grid system  
 - **Background Customization**: Dynamic sky color and environment settings  
 
----
 
 ### Camera Animation System
 
@@ -48,7 +47,6 @@ Interactive Article Studio enables creators to build engaging narrative experien
 - **Path Management**: Save, load, and organize multiple camera animations  
 - **Smooth Playback**: 60fps interpolation for cinematic camera movements  
 
----
 
 ### Scrollytelling Engine
 
@@ -57,7 +55,6 @@ Interactive Article Studio enables creators to build engaging narrative experien
 - **Multiple Directions**: Configurable text entrance animations (bottom-to-top, left-to-right, etc.)  
 - **Customizable Styling**: Adjustable background colors, opacity, and overlay width  
 
----
 
 ### Image Hotspots
 
@@ -67,14 +64,12 @@ Interactive Article Studio enables creators to build engaging narrative experien
   - **Eye (👁️)**: Show detailed images with descriptions  
 - **Visual Editor**: Drag-and-drop hotspot placement on uploaded images  
 
----
 
 ### Scroll-Driven Video
 
 - **Scroll-Based Video**: Videos play frame-by-frame based on scroll  
 - **Multiple Formats**: Support for MP4, WebM, and OGG  
 
----
 
 ### AI-Powered Audio
 
@@ -83,7 +78,6 @@ Interactive Article Studio enables creators to build engaging narrative experien
 - **Quality Options**: Multiple precision levels (FP32, FP16, Q8, Q4) for speed and accuracy  
 - **Audio Management**: Save and reuse generated audio clips  
 
----
 
 ### Article Builder
 
@@ -97,7 +91,7 @@ Interactive Article Studio enables creators to build engaging narrative experien
 - **Drag-to-Reorder**: Flexible section organization  
 - **HTML Export**: Complete standalone interactive article generator with embedded assets  
 
----
+
 
 ## Technology Stack
 
@@ -108,7 +102,6 @@ Interactive Article Studio enables creators to build engaging narrative experien
 - **Quill.js**: WYSIWYG rich text editor  
 - **Custom Components**: Specialized A-Frame components for camera recording, scroll animation, video control, etc.  
 
----
 
 ### Backend
 
@@ -116,7 +109,7 @@ Interactive Article Studio enables creators to build engaging narrative experien
 - **SQLite3**: Lightweight project database for saving projects  
 - **Kokoro.js**: Text-to-speech AI model  
 
----
+
 
 ## Export System
 
@@ -130,14 +123,14 @@ The export system creates standalone HTML files with:
 - All custom A-Frame components inlined  
 - Self-contained output with no external dependencies  
 
----
+
 
 ## Requirements
 
 - Modern web browser with WebGL 2.0 support (web version)  
 - Minimum 4GB RAM (for TTS model loading)  
 
----
+
 
 ## Browser Compatibility (Web Version)
 
@@ -145,7 +138,7 @@ The export system creates standalone HTML files with:
 - Firefox 88+  
 - Safari 14.1+  
 
----
+
 
 ## Changes in ver 0.0.2
 
@@ -154,21 +147,18 @@ The export system creates standalone HTML files with:
 - Fixed Gaussian Splatting rendering bug.  
 - Resolved transparency issues.  
 
----
 
 ### Performance Improvements
 
 - Updated `gaussian-splat-viewer` so performance-critical parts are executed in Web Workers.  
 - Added performance configuration options.  
 
----
 
 ### UI & UX
 
 - Updated **Camera Paths** section design.  
 - Updated audio generation button.  
 
----
 
 ### New Feature
 
@@ -177,7 +167,7 @@ The export system creates standalone HTML files with:
   - Supports elevation/height drawing  
   - Enables more precise and interactive camera path control  
 
----
+
 
 ## Upcoming Changes
 
@@ -197,13 +187,13 @@ The export system creates standalone HTML files with:
 - AI-powered text summarization (local + OpenAI API) — *In Progress*  
 - Infographics section type in Article Builder  
 
----
+
 
 ## License
 
 MIT  
 
----
+
 
 ## Documentation
 
