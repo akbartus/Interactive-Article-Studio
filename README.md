@@ -104,6 +104,25 @@ The export system creates standalone HTML files with:
 - Firefox 88+
 - Safari 14.1+
 
+## Changes in ver 0.0.2
+
+### Fixes
+- Fixed Gaussian Splatting rendering bug.
+- Resolved transparency issues.
+
+### Performance Improvements
+- Updated `gaussian-splat-viewer` so performance-critical parts are executed in Web Workers.
+- Added performance configuration options.
+
+### UI & UX
+- Updated **Camera Paths** section design.
+
+### New Feature
+- Added a new camera path option: **Path Designer**.
+  - Draw camera paths manually on the canvas.
+  - Supports elevation/height drawing.
+  - Enables more precise and interactive camera path control. 
+
 ## Upcoming changes:
 - Add Studio performance options (in File Section) that impacts webGPU load and speed
 - Predefined camera paths selector
