@@ -360,7 +360,6 @@ class SceneManager {
             side: THREE.DoubleSide,
             transparent: true,
             opacity: 0.1,
-            toneMapped: false,
             visible: false,
           });
           modelContainer.setAttribute("position", entity.position);

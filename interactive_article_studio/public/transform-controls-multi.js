@@ -1367,16 +1367,16 @@ class TransformControlsGizmo extends THREE.Object3D {
       depthTest: false,
       depthWrite: false,
       fog: false,
-      toneMapped: false,
-      transparent: true,
+        transparent: true,
+        opacity: 0.1,
       side: THREE.FrontSide,
     });
     const gizmoLineMaterial = new THREE.LineBasicMaterial({
       depthTest: false,
       depthWrite: false,
       fog: false,
-      toneMapped: false,
-      transparent: true,
+        transparent: true,
+        opacity: 0.1,
     });
     // Make unique material for each axis/color
     const matInvisible = gizmoMaterial.clone();
@@ -2288,7 +2288,6 @@ class TransformControlsPlane extends THREE.Mesh {
         side: THREE.DoubleSide,
         transparent: true,
         opacity: 0.1,
-        toneMapped: false,
       })
     );
     this.type = "TransformControlsPlane";

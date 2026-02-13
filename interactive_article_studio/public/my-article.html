@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>my-article</title>
+<!--
+  REQUIRED FILES FOR THIS ARTICLE TO WORK:
+  
+  Place the following files in the SAME FOLDER as this HTML file:
+  
+  
+  VIDEO FILES:
+  - sample_video.mp4
+  
+  CONTROLS:
+  - Scroll naturally to read and navigate
+  - 3D sections animate automatically as you scroll
+  - Video sections play frame-by-frame as you scroll
+-->
+
+    <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
+    <script src="https://unpkg.com/aframe-troika-text/dist/aframe-troika-text.min.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #2d3748;
+            overflow-x: hidden;
+        }
+
+        /* Article Sections */
+        .article-section {
+            min-height: 100vh;
+            padding: 80px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .article-content {
+            max-width: 800px;
+            width: 100%;
+        }
+
+        .article-content h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
+            color: #1a202c;
+        }
+
+        .article-content h2 {
+            font-size: 2.2em;
+            margin-bottom: 20px;
+            color: #2d3748;
+        }
+
+        .article-content h3 {
+            font-size: 1.8em;
+            margin-bottom: 16px;
+            color: #2d3748;
+        }
+
+        .article-content p {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            color: #4a5568;
+        }
+
+        .article-content img {
+            width: 100%;
+            border-radius: 8px;
+            margin: 30px 0;
+        }
+
+        .article-content ul, .article-content ol {
+            margin-left: 30px;
+            margin-bottom: 20px;
+        }
+
+        .article-content li {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            color: #4a5568;
+        }
+
+        .article-content a {
+            color: #4299e1;
+            text-decoration: none;
+        }
+
+        .article-content a:hover {
+            text-decoration: underline;
+        }
+
+        /* 3D Scene Containers */
+       #main-3d-scene {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: 0;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+#main-3d-scene.active {
+    opacity: 1;
+}
+
+/* 3D Section Spacers */
+.scene-spacer {
+    position: relative;
+    height: 300vh;
+    z-index: 1;
+    background: transparent;
+}
+
+        .scene-container.active .scene-canvas {
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            z-index: 10;
+        }
+
+        #scene-0 .scene-canvas { z-index: 10; }
+        #scene-1 .scene-canvas { z-index: 20; }
+
+        /* Text Overlays for 3D Sections */
+        .text-overlay {
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.95);
+            color: #2d3748;
+            padding: 40px 60px;
+            border-radius: 12px;
+            max-width: 80%;
+            text-align: center;
+            font-size: 1.5em;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .text-overlay.visible {
+            opacity: 1;
+        }
+
+        /* Scroll Progress Indicator */
+        .scroll-progress {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(66, 153, 225, 0.1);
+            border: 3px solid rgba(66, 153, 225, 0.3);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #4299e1;
+            font-weight: bold;
+            z-index: 1000;
+        }
+
+        .scroll-progress.active {
+            display: flex;
+        }
+
+        @media (max-width: 768px) {
+            .article-content h1 {
+                font-size: 2em;
+            }
+            .article-content h2 {
+                font-size: 1.6em;
+            }
+            .article-content p, .article-content li {
+                font-size: 1em;
+            }
+            .text-overlay {
+                padding: 20px 30px;
+                font-size: 1.2em;
+            }
+        }
+    </style>
+
+    <script>
+        // Store all 3D section data
+        const ANIMATED_SECTIONS = [{"type":"video","id":"video-section-0","name":"","videoSrc":"sample_video.mp4","videoFilename":"sample_video.mp4","videoDuration":6.041667,"scrollDuration":300}];
+    
+    // Video scroll controller (standalone, no A-Frame dependency)
+    class VideoScrollController {
+        constructor() {
+            this.videoSections = [];
+            this.currentVideoSection = null;
+            this.onScroll = this.onScroll.bind(this);
+            this.init();
+        }
+        
+        init() {
+            // Find all video spacers
+            const videoSpacers = document.querySelectorAll('.video-spacer');
+            videoSpacers.forEach((spacer, index) => {
+                const videoIndex = parseInt(spacer.dataset.videoIndex);
+                const sectionData = ANIMATED_SECTIONS.find(s => s.type === 'video' && s.id === spacer.dataset.sectionId);
+                
+                if (sectionData) {
+                    // Create video element
+                    const videoEl = document.createElement('video');
+                    videoEl.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100vh; object-fit: cover; z-index: 0; opacity: 0; transition: opacity 0.3s;';
+                    videoEl.muted = true;
+                    videoEl.playsInline = true;
+                    videoEl.preload = 'auto';
+                    
+                    // CRITICAL: Set src AFTER adding load listeners
+                    videoEl.addEventListener('loadedmetadata', () => {
+                        console.log('Video loaded:', sectionData.videoFilename);
+                        this.videoSections.push({
+                            spacer: spacer,
+                            videoEl: videoEl,
+                            duration: videoEl.duration,
+                            scrollDuration: sectionData.scrollDuration,
+                            ready: true
+                        });
+                        
+                        // Force initial frame render
+                        videoEl.currentTime = 0.1;
+                        
+                        // Trigger initial scroll check after video is ready
+                        this.onScroll();
+                    });
+                    
+                    videoEl.addEventListener('error', (e) => {
+                        console.error('Video load error:', e, 'for file:', sectionData.videoFilename);
+                        console.error('Make sure the video file is in the same folder as this HTML file');
+                    });
+                    
+                    // Add to DOM first
+                    document.body.appendChild(videoEl);
+                    
+                    // Set src LAST
+                    videoEl.src = sectionData.videoFilename;
+                    videoEl.load(); // Force load
+                }
+            });
+            
+            window.addEventListener('scroll', this.onScroll);
+            this.onScroll(); // Initial check
+        }
+        
+        onScroll() {
+            const vh = window.innerHeight;
+            let activeSection = null;
+            
+            this.videoSections.forEach(section => {
+                if (!section.ready) return; // Skip if video not loaded yet
+                
+                const rect = section.spacer.getBoundingClientRect();
+                const isActive = rect.top < vh && rect.bottom > 0;
+                
+                if (isActive) {
+                    activeSection = section;
+                    section.videoEl.style.opacity = '1';
+                    
+                    // Calculate progress (0 to 1)
+                    const sectionTop = rect.top;
+                    const sectionHeight = rect.height;
+                    const scrollableHeight = vh + sectionHeight;
+                    const scrolled = vh - sectionTop;
+                    const progress = Math.max(0, Math.min(1, scrolled / scrollableHeight));
+                    
+                    // Set video time based on scroll
+                    const targetTime = progress * section.duration;
+                    
+                    // Only update if difference is significant (prevents jitter)
+                    if (Math.abs(section.videoEl.currentTime - targetTime) > 0.1) {
+                        section.videoEl.currentTime = targetTime;
+                    }
+                } else {
+                    section.videoEl.style.opacity = '0';
+                }
+            });
+            
+            this.currentVideoSection = activeSection;
+        }
+    }
+    
+    // Initialize video controller when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            new VideoScrollController();
+        });
+    } else {
+        new VideoScrollController();
+    }
+
+    // Unified scroll-based 3D animation component
+    AFRAME.registerComponent('unified-scroll-animator', {
+        init: function () {
+            this.cameraEl = this.el;
+            this.currentSection = null;
+            this.currentAnimation = null;
+            this.currentFrame = 0;
+            this.textDisplayRange = 10;
+            
+            // Get all scene spacers
+            this.sceneSpacer = document.querySelectorAll('.scene-spacer');
+            this.sceneContainer = document.getElementById('main-3d-scene');
+            
+            // Bind scroll listener
+            this.onScroll = this.onScroll.bind(this);
+            window.addEventListener('scroll', this.onScroll);
+            
+            // Initial check
+            this.onScroll();
+        },
+
+        onScroll: function() {
+            const vh = window.innerHeight;
+            let activeSection = null;
+            let activeSpacer = null;
+            
+            // Find which scene spacer is currently in view
+            this.sceneSpacer.forEach((spacer) => {
+                const rect = spacer.getBoundingClientRect();
+                const isActive = rect.top < vh && rect.bottom > 0;
+                
+                if (isActive) {
+                    activeSection = spacer.dataset.sectionId;
+                    activeSpacer = spacer;
+                }
+            });
+            
+            // Show/hide 3D scene
+            if (activeSection) {
+                this.sceneContainer.classList.add('active');
+                
+                // Switch animation if section changed
+                if (this.currentSection !== activeSection) {
+                    this.loadAnimation(activeSection);
+                }
+                
+                // Calculate scroll progress within this section
+                const rect = activeSpacer.getBoundingClientRect();
+                const sectionTop = rect.top;
+                const sectionHeight = rect.height;
+                const progress = Math.max(0, Math.min(1, 
+                    (vh - sectionTop) / (vh + sectionHeight)
+                ));
+                
+                // Update camera position
+                this.updateCamera(progress);
+                
+                // Update text overlay
+                this.updateTextOverlay(activeSection);
+                
+            } else {
+                this.sceneContainer.classList.remove('active');
+                this.hideTextOverlay();
+            }
+        },
+
+        loadAnimation: function(sectionId) {
+            this.currentSection = sectionId;
+            
+            // Find animation data by matching the id property
+            const animData = ANIMATED_SECTIONS.find(s => s.type === '3d' && s.id === sectionId);
+            
+            if (!animData || !animData.recording) {
+                console.error('No animation data for section:', sectionId);
+                return;
+            }
+            
+            this.currentAnimation = animData.recording;
+            this.textSlides = animData.textSlides || [];
+            this.hasTextSlides = animData.hasTextSlides || false;
+            
+            // Parse steps
+            this.steps = Object.keys(this.currentAnimation).filter(key => key.startsWith('step_'));
+            this.totalFrames = this.currentAnimation.step_1.frameCount;
+            
+            // Jump to first frame of new animation
+            this.jumpToFrame(0);
+        },
+
+        updateCamera: function(progress) {
+            if (!this.currentAnimation || !this.steps.length) return;
+            
+            const targetFrame = Math.floor(progress * (this.totalFrames - 1));
+            this.currentFrame = targetFrame;
+            this.jumpToFrame(targetFrame);
+        },
+
+        jumpToFrame: function(frameIndex) {
+            if (!this.currentAnimation || !this.steps.length) return;
+            if (frameIndex < 0 || frameIndex >= this.totalFrames) return;
+
+            const stepKey = this.steps[0];
+            const stepData = this.currentAnimation[stepKey];
+            
+            if (!stepData || !stepData.position || !stepData.position[frameIndex]) return;
+            
+            const pos = stepData.position[frameIndex];
+            const rot = stepData.rotation[frameIndex];
+
+            this.cameraEl.setAttribute('position', pos[0] + ' ' + pos[1] + ' ' + pos[2]);
+            
+            let quaternion = new THREE.Quaternion();
+            quaternion.setFromEuler(new THREE.Euler(
+                THREE.MathUtils.degToRad(rot[0]),
+                THREE.MathUtils.degToRad(rot[1]),
+                THREE.MathUtils.degToRad(rot[2]),
+                'YXZ'
+            ));
+            this.cameraEl.object3D.quaternion.slerp(quaternion, 0.1);
+        },
+
+        updateTextOverlay: function(sectionId) {
+            if (!this.hasTextSlides || !this.textSlides || this.textSlides.length === 0) {
+                this.hideTextOverlay();
+                return;
+            }
+
+            const currentFrame = this.currentFrame + 1;
+            let foundText = false;
+
+            this.textSlides.forEach((slide) => {
+                const frameNumber = slide.frameNumber;
+                const durationFrames = slide.durationFrames;
+                const text = slide.text;
+                const startFrame = frameNumber - this.textDisplayRange;
+                const endFrame = frameNumber + durationFrames + this.textDisplayRange;
+
+                if (currentFrame >= startFrame && currentFrame <= endFrame) {
+                    const progress = this.calculateProgress(currentFrame, frameNumber, durationFrames);
+                    this.showTextOverlay(text, progress, sectionId);
+                    foundText = true;
+                }
+            });
+
+            if (!foundText) {
+                this.hideTextOverlay();
+            }
+        },
+
+        calculateProgress: function(currentFrame, targetFrame, durationFrames) {
+            const fadeInDuration = this.textDisplayRange;
+            const fadeOutDuration = this.textDisplayRange;
+            const fadeOutStart = targetFrame + durationFrames;
+
+            if (currentFrame < targetFrame) {
+                return 0.5 * (currentFrame - (targetFrame - fadeInDuration)) / fadeInDuration;
+            } else if (currentFrame >= targetFrame && currentFrame < fadeOutStart) {
+                return 1;
+            } else if (currentFrame >= fadeOutStart && currentFrame <= fadeOutStart + fadeOutDuration) {
+                return 1 + 0.5 * ((currentFrame - fadeOutStart) / fadeOutDuration);
+            } else {
+                return 0;
+            }
+        },
+
+        showTextOverlay: function(text, progress, sectionId) {
+            let textOverlay = document.querySelector('.text-overlay[data-section="' + sectionId + '"]');
+            if (!textOverlay) {
+                textOverlay = document.createElement('div');
+                textOverlay.className = 'text-overlay';
+                textOverlay.setAttribute('data-section', sectionId);
+                document.body.appendChild(textOverlay);
+            }
+
+            textOverlay.innerHTML = text;
+            textOverlay.style.opacity = Math.max(0, Math.min(1, progress * 2));
+            
+            if (progress >= 0.5 && progress <= 1) {
+                textOverlay.classList.add('visible');
+            } else {
+                textOverlay.classList.remove('visible');
+            }
+        },
+
+        hideTextOverlay: function() {
+            const textOverlays = document.querySelectorAll('.text-overlay');
+            textOverlays.forEach(overlay => {
+                overlay.classList.remove('visible');
+                overlay.style.opacity = 0;
+            });
+        },
+
+        remove: function() {
+            window.removeEventListener('scroll', this.onScroll);
+        }
+    });
+    </script>
+</head>
+<body>
+    <div class="scroll-progress" id="scroll-progress">0%</div>
+
+    
+
+            <!-- Video Section 1 -->
+            <div class="video-spacer" data-section-id="video-section-0" data-video-index="0" style="height: 300vh; background: #000000;"></div>
+        
+
+    <script>
+        // Hotspot interaction
+        function showHotspotTooltip(element) {
+            const text = element.getAttribute('data-text');
+            const image = element.getAttribute('data-image');
+            
+            // Remove existing tooltips
+            document.querySelectorAll('.hotspot-tooltip-popup').forEach(t => t.remove());
+            
+            // Create tooltip
+            const tooltip = document.createElement('div');
+            tooltip.className = 'hotspot-tooltip-popup';
+            tooltip.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); z-index: 10000; max-width: 600px;';
+            
+            let content = '<div style="display: flex; gap: 20px; align-items: flex-start;">';
+            
+            if (image) {
+                content += '<img src="' + image + '" style="width: 250px; height: auto; border-radius: 8px; flex-shrink: 0;">';
+            }
+            
+            content += '<div style="flex: 1;"><p style="margin: 0 0 20px 0; font-size: 16px; line-height: 1.6;">' + text + '</p>';
+            content += '<button class="close-hotspot-btn" style="background: #4299e1; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600;">Close</button></div>';
+            content += '</div>';
+            
+            tooltip.innerHTML = content;
+            document.body.appendChild(tooltip);
+            
+            // Add click handler to close button
+            tooltip.querySelector('.close-hotspot-btn').onclick = () => {
+                tooltip.remove();
+            };
+        }
+        // Update scroll progress indicator
+        window.addEventListener('scroll', () => {
+            const scrollProgress = document.getElementById('scroll-progress');
+            const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const progress = Math.round((window.scrollY / totalHeight) * 100);
+            scrollProgress.textContent = progress + '%';
+            
+            if (window.scrollY > 100) {
+                scrollProgress.classList.add('active');
+            } else {
+                scrollProgress.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>

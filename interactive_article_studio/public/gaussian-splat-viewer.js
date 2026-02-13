@@ -20,22 +20,9 @@ AFRAME.registerComponent("gaussian-splatting", {
         this.data.xrPixelRatio
       );
     }
-
-    // document.querySelector("a-scene").addEventListener("loaded", () => {
-    // Small hack by Kfarr: https://github.com/quadjr/aframe-gaussian-splatting/issues/21
-    setTimeout(() => {
-      this.loadData(
-        this.el.sceneEl.camera.el.components.camera.camera,
-        this.el.object3D,
-        this.el.sceneEl.renderer,
-        this.data.src
-      );
-      if (!!this.data.cutoutEntity) {
-        this.cutout = this.data.cutoutEntity.object3D;
-      }
-    }, 1000);
-    //});
   },
+    // Removal of redundant setTimeout load that caused double-loading
+    // loadData is already called in the first update() call
   update: function (oldData) {
     // Check if the src attribute has changed
     if (oldData.colorEffect !== this.data.colorEffect) {
@@ -332,18 +319,56 @@ void main () {
     // };
 
     this.worker.onmessage = (e) => {
-      let indexes = new Uint32Array(e.data.sortedIndexes);
+      if (e.data.method === "preprocessed") {
+        const { centerAndScaleChunk, covAndColorChunk, vertexCount, loadedVertexCount } = e.data;
+        
+        // Update local arrays for reference if needed
+        this.centerAndScaleData.set(new Float32Array(centerAndScaleChunk), loadedVertexCount * 4);
+        this.covAndColorData.set(new Uint32Array(covAndColorChunk), loadedVertexCount * 4);
 
-      // Check if the length of indexes exceeds the length of splatIndex
-      if (indexes.length > mesh.geometry.attributes.splatIndex.array.length) {
-        // Resize the splatIndex array to accommodate the new indexes
-        const newSplatIndexArray = new Uint32Array(indexes.length);
-        mesh.geometry.attributes.splatIndex =
-          new THREE.InstancedBufferAttribute(newSplatIndexArray, 1, false);
-        mesh.geometry.attributes.splatIndex.setUsage(THREE.DynamicDrawUsage);
+        const gl = this.renderer.getContext();
+        let currentLoaded = loadedVertexCount;
+        let remaining = vertexCount;
+
+        while (remaining > 0) {
+          let width = 0;
+          let height = 1;
+          let xoffset = currentLoaded % this.bufferTextureWidth;
+          let yoffset = Math.floor(currentLoaded / this.bufferTextureWidth);
+
+          if (xoffset !== 0) {
+            width = Math.min(this.bufferTextureWidth - xoffset, remaining);
+          } else if (remaining >= this.bufferTextureWidth) {
+            width = this.bufferTextureWidth;
+            height = Math.floor(remaining / this.bufferTextureWidth);
+          } else {
+            width = remaining;
+          }
+
+          // Update centerAndScaleTexture
+          const centerAndScaleTextureProperties = this.renderer.properties.get(this.centerAndScaleTexture);
+          gl.bindTexture(gl.TEXTURE_2D, centerAndScaleTextureProperties.__webglTexture);
+          gl.texSubImage2D(gl.TEXTURE_2D, 0, xoffset, yoffset, width, height, gl.RGBA, gl.FLOAT, this.centerAndScaleData, currentLoaded * 4);
+
+          // Update covAndColorTexture
+          const covAndColorTextureProperties = this.renderer.properties.get(this.covAndColorTexture);
+          gl.bindTexture(gl.TEXTURE_2D, covAndColorTextureProperties.__webglTexture);
+          gl.texSubImage2D(gl.TEXTURE_2D, 0, xoffset, yoffset, width, height, gl.RGBA_INTEGER, gl.UNSIGNED_INT, this.covAndColorData, currentLoaded * 4);
+
+          const processed = width * height;
+          currentLoaded += processed;
+          remaining -= processed;
+        }
+
+        return;
       }
 
-      // Set the new indexes
+      let indexes = new Uint32Array(e.data.sortedIndexes);
+      if (indexes.length > mesh.geometry.attributes.splatIndex.array.length) {
+        const newSplatIndexArray = new Uint32Array(indexes.length);
+        mesh.geometry.attributes.splatIndex = new THREE.InstancedBufferAttribute(newSplatIndexArray, 1, false);
+        mesh.geometry.attributes.splatIndex.setUsage(THREE.DynamicDrawUsage);
+      }
       mesh.geometry.attributes.splatIndex.set(indexes);
       mesh.geometry.attributes.splatIndex.needsUpdate = true;
       mesh.geometry.instanceCount = indexes.length;
@@ -508,160 +533,36 @@ void main () {
   },
   pushDataBuffer: function (buffer, vertexCount) {
     if (this.loadedVertexCount + vertexCount > this.maxVertexes) {
-      console.log("vertexCount limited to ", this.maxVertexes, vertexCount);
       vertexCount = this.maxVertexes - this.loadedVertexCount;
     }
-    if (vertexCount <= 0) {
-      return;
-    }
+    if (vertexCount <= 0) return;
 
-    let u_buffer = new Uint8Array(buffer);
-    let f_buffer = new Float32Array(buffer);
-    let matrices = new Float32Array(vertexCount * 16);
-
-    const covAndColorData_uint8 = new Uint8Array(this.covAndColorData.buffer);
-    const covAndColorData_int16 = new Int16Array(this.covAndColorData.buffer);
-    for (let i = 0; i < vertexCount; i++) {
-      let quat = new THREE.Quaternion(
-        (u_buffer[32 * i + 28 + 1] - 128) / 128.0,
-        (u_buffer[32 * i + 28 + 2] - 128) / 128.0,
-        -(u_buffer[32 * i + 28 + 3] - 128) / 128.0,
-        (u_buffer[32 * i + 28 + 0] - 128) / 128.0
-      );
-      let center = new THREE.Vector3(
-        f_buffer[8 * i + 0],
-        f_buffer[8 * i + 1],
-        -f_buffer[8 * i + 2]
-      );
-      let scale = new THREE.Vector3(
-        f_buffer[8 * i + 3 + 0],
-        f_buffer[8 * i + 3 + 1],
-        f_buffer[8 * i + 3 + 2]
-      );
-
-      let mtx = new THREE.Matrix4();
-      mtx.makeRotationFromQuaternion(quat);
-      mtx.transpose();
-      mtx.scale(scale);
-      let mtx_t = mtx.clone();
-      mtx.transpose();
-      mtx.premultiply(mtx_t);
-      mtx.setPosition(center);
-
-      let cov_indexes = [0, 1, 2, 5, 6, 10];
-      let max_value = 0.0;
-      for (let j = 0; j < cov_indexes.length; j++) {
-        if (Math.abs(mtx.elements[cov_indexes[j]]) > max_value) {
-          max_value = Math.abs(mtx.elements[cov_indexes[j]]);
-        }
-      }
-
-      let destOffset = this.loadedVertexCount * 4 + i * 4;
-      this.centerAndScaleData[destOffset + 0] = center.x;
-      this.centerAndScaleData[destOffset + 1] = center.y;
-      this.centerAndScaleData[destOffset + 2] = center.z;
-      this.centerAndScaleData[destOffset + 3] = max_value / 32767.0;
-
-      destOffset = this.loadedVertexCount * 8 + i * 4 * 2;
-      for (let j = 0; j < cov_indexes.length; j++) {
-        covAndColorData_int16[destOffset + j] = parseInt(
-          (mtx.elements[cov_indexes[j]] * 32767.0) / max_value
-        );
-      }
-
-      // RGBA
-      destOffset = this.loadedVertexCount * 16 + (i * 4 + 3) * 4;
-      covAndColorData_uint8[destOffset + 0] = u_buffer[32 * i + 24 + 0];
-      covAndColorData_uint8[destOffset + 1] = u_buffer[32 * i + 24 + 1];
-      covAndColorData_uint8[destOffset + 2] = u_buffer[32 * i + 24 + 2];
-      covAndColorData_uint8[destOffset + 3] = u_buffer[32 * i + 24 + 3];
-
-      // Store scale and transparent to remove splat in sorting process
-      mtx.elements[15] =
-        (Math.max(scale.x, scale.y, scale.z) * u_buffer[32 * i + 24 + 3]) /
-        255.0;
-
-      for (let j = 0; j < 16; j++) {
-        matrices[i * 16 + j] = mtx.elements[j];
-      }
-    }
-
-    const gl = this.renderer.getContext();
-    while (vertexCount > 0) {
-      let width = 0;
-      let height = 0;
-      let xoffset = this.loadedVertexCount % this.bufferTextureWidth;
-      let yoffset = Math.floor(
-        this.loadedVertexCount / this.bufferTextureWidth
-      );
-      if (this.loadedVertexCount % this.bufferTextureWidth != 0) {
-        width =
-          Math.min(this.bufferTextureWidth, xoffset + vertexCount) - xoffset;
-        height = 1;
-      } else if (Math.floor(vertexCount / this.bufferTextureWidth) > 0) {
-        width = this.bufferTextureWidth;
-        height = Math.floor(vertexCount / this.bufferTextureWidth);
-      } else {
-        width = vertexCount % this.bufferTextureWidth;
-        height = 1;
-      }
-
-      const centerAndScaleTextureProperties = this.renderer.properties.get(
-        this.centerAndScaleTexture
-      );
-      gl.bindTexture(
-        gl.TEXTURE_2D,
-        centerAndScaleTextureProperties.__webglTexture
-      );
-      gl.texSubImage2D(
-        gl.TEXTURE_2D,
-        0,
-        xoffset,
-        yoffset,
-        width,
-        height,
-        gl.RGBA,
-        gl.FLOAT,
-        this.centerAndScaleData,
-        this.loadedVertexCount * 4
-      );
-
-      const covAndColorTextureProperties = this.renderer.properties.get(
-        this.covAndColorTexture
-      );
-      gl.bindTexture(
-        gl.TEXTURE_2D,
-        covAndColorTextureProperties.__webglTexture
-      );
-      gl.texSubImage2D(
-        gl.TEXTURE_2D,
-        0,
-        xoffset,
-        yoffset,
-        width,
-        height,
-        gl.RGBA_INTEGER,
-        gl.UNSIGNED_INT,
-        this.covAndColorData,
-        this.loadedVertexCount * 4
-      );
-
-      this.loadedVertexCount += width * height;
-      vertexCount -= width * height;
-    }
-
-    this.worker.postMessage(
-      {
-        method: "push",
-        matrices: matrices.buffer,
-      },
-      [matrices.buffer]
-    );
+    // Send raw buffer to worker for heavy math processing
+    this.worker.postMessage({
+      method: "preprocess",
+      buffer: buffer,
+      vertexCount: vertexCount,
+      loadedVertexCount: this.loadedVertexCount
+    }, [buffer]);
+    
+    // Update offset immediately to prevent race conditions during async ingestion
+    this.loadedVertexCount += vertexCount;
   },
   tick: function (time, timeDelta) {
     if (this.sortReady) {
       this.sortReady = false;
-      let camera_mtx = this.getModelViewMatrix().elements;
+
+      // Always use the active camera from the scene
+      const activeCamera = this.el.sceneEl.camera;
+      if (!activeCamera) {
+          this.sortReady = true;
+          return;
+      }
+      
+      // Ensure camera matrix is up to date
+      activeCamera.updateMatrixWorld();
+
+      let camera_mtx = this.getModelViewMatrix(activeCamera).elements;
       let view = new Float32Array([
         camera_mtx[2],
         camera_mtx[6],
@@ -688,7 +589,7 @@ void main () {
   },
   getProjectionMatrix: function (camera) {
     if (!camera) {
-      camera = this.camera;
+      camera = this.el.sceneEl.camera;
     }
     let mtx = camera.projectionMatrix.clone();
     mtx.elements[4] *= -1;
@@ -699,7 +600,7 @@ void main () {
   },
   getModelViewMatrix: function (camera) {
     if (!camera) {
-      camera = this.camera;
+      camera = this.el.sceneEl.camera;
     }
     const viewMatrix = camera.matrixWorld.clone();
     viewMatrix.elements[1] *= -1.0;
@@ -801,6 +702,116 @@ void main () {
     };
 
     self.onmessage = (e) => {
+      if (e.data.method == "preprocess") {
+        const { buffer, vertexCount, loadedVertexCount } = e.data;
+        const u_buffer = new Uint8Array(buffer);
+        const f_buffer = new Float32Array(buffer);
+        
+        const centerAndScaleChunk = new Float32Array(vertexCount * 4);
+        const covAndColorChunk = new Uint32Array(vertexCount * 4);
+        const new_matrices = new Float32Array(vertexCount * 16);
+
+        const covAndColorChunk_uint8 = new Uint8ClampedArray(covAndColorChunk.buffer);
+        const covAndColorChunk_int16 = new Int16Array(covAndColorChunk.buffer);
+
+        for (let i = 0; i < vertexCount; i++) {
+          const x = (u_buffer[32 * i + 28 + 1] - 128) / 128.0;
+          const y = (u_buffer[32 * i + 28 + 2] - 128) / 128.0;
+          const z = -(u_buffer[32 * i + 28 + 3] - 128) / 128.0;
+          const w = (u_buffer[32 * i + 28 + 0] - 128) / 128.0;
+
+          const cx = f_buffer[8 * i + 0];
+          const cy = f_buffer[8 * i + 1];
+          const cz = -f_buffer[8 * i + 2];
+
+          const sx = f_buffer[8 * i + 3 + 0];
+          const sy = f_buffer[8 * i + 3 + 1];
+          const sz = f_buffer[8 * i + 3 + 2];
+
+          const opac = u_buffer[32 * i + 24 + 3] / 255.0;
+
+          // Matrix from quaternion and scale
+          const x2 = x + x, y2 = y + y, z2 = z + z;
+          const xx = x * x2, xy = x * y2, xz = x * z2;
+          const yy = y * y2, yz = y * z2, zz = z * z2;
+          const wx = w * x2, wy = w * y2, wz = w * z2;
+
+          let r0 = (1 - (yy + zz)) * sx;
+          let r1 = (xy - wz) * sx;
+          let r2 = (xz + wy) * sx;
+
+          let r4 = (xy + wz) * sy;
+          let r5 = (1 - (xx + zz)) * sy;
+          let r6 = (yz - wx) * sy;
+
+          let r8 = (xz - wy) * sz;
+          let r9 = (yz + wx) * sz;
+          let r10 = (1 - (xx + yy)) * sz;
+
+          // Covariance = M * M^T
+          const c0 = r0 * r0 + r4 * r4 + r8 * r8;
+          const c1 = r0 * r1 + r4 * r5 + r8 * r9;
+          const c2 = r0 * r2 + r4 * r6 + r8 * r10;
+          const c5 = r1 * r1 + r5 * r5 + r9 * r9;
+          const c6 = r1 * r2 + r5 * r6 + r9 * r10;
+          const c10 = r2 * r2 + r6 * r6 + r10 * r10;
+
+          const max_v = Math.max(Math.abs(c0), Math.abs(c1), Math.abs(c2), Math.abs(c5), Math.abs(c6), Math.abs(c10));
+          
+          centerAndScaleChunk[i * 4 + 0] = cx;
+          centerAndScaleChunk[i * 4 + 1] = cy;
+          centerAndScaleChunk[i * 4 + 2] = cz;
+          centerAndScaleChunk[i * 4 + 3] = max_v / 32767.0;
+
+          const factor = 32767.0 / max_v;
+          covAndColorChunk_int16[i * 8 + 0] = c0 * factor;
+          covAndColorChunk_int16[i * 8 + 1] = c1 * factor;
+          covAndColorChunk_int16[i * 8 + 2] = c2 * factor;
+          covAndColorChunk_int16[i * 8 + 3] = c5 * factor;
+          covAndColorChunk_int16[i * 8 + 4] = c6 * factor;
+          covAndColorChunk_int16[i * 8 + 5] = c10 * factor;
+
+          covAndColorChunk_uint8[i * 16 + 12] = u_buffer[32 * i + 24 + 0];
+          covAndColorChunk_uint8[i * 16 + 13] = u_buffer[32 * i + 24 + 1];
+          covAndColorChunk_uint8[i * 16 + 14] = u_buffer[32 * i + 24 + 2];
+          covAndColorChunk_uint8[i * 16 + 15] = u_buffer[32 * i + 24 + 3];
+
+          // Store for sorting
+          const base = i * 16;
+          new_matrices[base + 0] = r0;
+          new_matrices[base + 1] = r1;
+          new_matrices[base + 2] = r2;
+          new_matrices[base + 4] = r4;
+          new_matrices[base + 5] = r5;
+          new_matrices[base + 6] = r6;
+          new_matrices[base + 8] = r8;
+          new_matrices[base + 9] = r9;
+          new_matrices[base + 10] = r10;
+          new_matrices[base + 12] = cx;
+          new_matrices[base + 13] = cy;
+          new_matrices[base + 14] = cz;
+          new_matrices[base + 15] = Math.max(sx, sy, sz) * opac;
+        }
+
+        // Add to worker's internal matrices list
+        if (matrices === undefined) {
+          matrices = new_matrices;
+        } else {
+          const resized = new Float32Array(matrices.length + new_matrices.length);
+          resized.set(matrices);
+          resized.set(new_matrices, matrices.length);
+          matrices = resized;
+        }
+
+        self.postMessage({
+          method: "preprocessed",
+          centerAndScaleChunk: centerAndScaleChunk.buffer,
+          covAndColorChunk: covAndColorChunk.buffer,
+          vertexCount,
+          loadedVertexCount
+        }, [centerAndScaleChunk.buffer, covAndColorChunk.buffer]);
+        return;
+      }
       if (e.data.method == "clear") {
         matrices = undefined;
       }
@@ -809,7 +820,7 @@ void main () {
         if (matrices === undefined) {
           matrices = new_matrices;
         } else {
-          resized = new Float32Array(matrices.length + new_matrices.length);
+          const resized = new Float32Array(matrices.length + new_matrices.length);
           resized.set(matrices);
           resized.set(new_matrices, matrices.length);
           matrices = resized;
