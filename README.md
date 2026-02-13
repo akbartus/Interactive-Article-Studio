@@ -1,4 +1,4 @@
-# Interactive Article Studio
+# **Interactive Article Studio**
 
 <table>
   <tr>
@@ -24,13 +24,13 @@ A powerful web-based and application-based (Windows, macOS) tool for creating im
 
 
 
-## Overview
+## **Overview**
 
 Interactive Article Studio enables creators to build engaging narrative experiences by seamlessly blending traditional article content with interactive 3D elements. The platform, available in both web and desktop application forms, supports real-time camera path recording, text overlays synchronized with 3D animations, and multimedia integration — all exportable as standalone HTML files.
 
 
 
-## Key Features
+## **Key Features**
 
 ### 3D Scene Management
 
@@ -93,7 +93,7 @@ Interactive Article Studio enables creators to build engaging narrative experien
 
 
 
-## Technology Stack
+## **Technology Stack**
 
 ### Frontend
 
@@ -111,7 +111,7 @@ Interactive Article Studio enables creators to build engaging narrative experien
 
 
 
-## Export System
+## **Export System**
 
 The export system creates standalone HTML files with:
 
@@ -125,14 +125,14 @@ The export system creates standalone HTML files with:
 
 
 
-## Requirements
+## **Requirements**
 
 - Modern web browser with WebGL 2.0 support (web version)  
 - Minimum 4GB RAM (for TTS model loading)  
 
 
 
-## Browser Compatibility (Web Version)
+## **Browser Compatibility (Web Version)**
 
 - Chrome / Edge 90+  
 - Firefox 88+  
@@ -140,7 +140,7 @@ The export system creates standalone HTML files with:
 
 
 
-## Changes in ver 0.0.2
+## **Changes in ver 0.0.2**
 
 ### Fixes
 
@@ -169,9 +169,8 @@ The export system creates standalone HTML files with:
 
 
 
-## Upcoming Changes
+## **Future Changes**
 
-- Add Studio performance options (File section) impacting WebGPU load and speed  
 - Predefined camera paths selector  
 - AI-powered short video generation  
 - Project autosave options  
@@ -189,12 +188,12 @@ The export system creates standalone HTML files with:
 
 
 
-## License
+## **License**
 
 MIT  
 
 
 
-## Documentation
+## **Documentation**
 
 Full documentation coming soon.
