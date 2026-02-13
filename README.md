@@ -144,11 +144,10 @@ The export system creates standalone HTML files with:
 ### Web Version
 
 1. Clone the repository:
-   ```sh
-   git clone <repository-url>
-  ```
+```sh
+git clone <repository-url>
+```
 2. Navigate to the project directory:
-
 ```sh
 cd interactive_article_studio
 ```
