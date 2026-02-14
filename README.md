@@ -155,8 +155,7 @@ Interactive Article Studio.exe
   - Enables more precise and interactive camera path control  
 
 
-## **Future Changes**
-- Predefined camera paths selector  
+## **Future Changes**  
 - AI-powered short video generation  
 - Project autosave options  
 - Import spreadsheet containing text, frame number, and duration  
