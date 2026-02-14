@@ -15,7 +15,7 @@
   </tr>
   <tr>
     <td><img src="img/7.jpg" title="screen capture" alt="screen capture" height="400"></td>
-     <td><img src="img/8.jpg" title="screen capture" alt="screen capture" height="400"></td>
+     <td><img src="img/" title="screen capture" alt="screen capture" height="400"></td>
   </tr>
     <tr>
     <td><img src="img/9.jpg" title="screen capture" alt="screen capture" height="400"></td>
