@@ -42,8 +42,9 @@ Interactive Article Studio enables creators to build engaging narrative experien
 
 ### Camera Animation System
 
-- **Live Recording**: Record camera movements in real-time with frame-perfect capture  
-- **Keyframe Editor**: Manually place camera positions and create interpolated paths  
+- **Live Recording** mode: Record camera movements in real-time with frame-perfect capture  
+- **Keyframe Editor**: Manually place camera positions and create interpolated paths
+- - **Path designer** mode: Draw camera path on canvas, define when to start and finish    
 - **Path Management**: Save, load, and organize multiple camera animations  
 - **Smooth Playback**: 60fps interpolation for cinematic camera movements  
 
@@ -87,7 +88,6 @@ Interactive Article Studio enables creators to build engaging narrative experien
   - **Hotspot Sections**: Interactive image experiences  
   - **Video Sections**: Scroll-controlled video playback  
   - **Audio Sections**: Embedded audio players with transcripts  
-
 - **Drag-to-Reorder**: Flexible section organization  
 - **HTML Export**: Complete standalone interactive article generator with embedded assets  
 
@@ -165,7 +165,7 @@ http://localhost:3000/
 ```
 ### Windows
 1. Go to the Releases section of this repository.
-2. Download all three .zip files.
+2. Download all .zip files.
 3. Extract the downloaded files.
 4. Open the extracted folder.
 5. Run:
