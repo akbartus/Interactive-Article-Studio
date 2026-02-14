@@ -18,10 +18,7 @@
   </tr>
 </table>
 
-
-
 A powerful web-based and application-based (Windows, macOS) tool for creating immersive, scroll-driven 3D storytelling experiences. Build interactive articles that combine rich text, 3D scenes, camera animations, hotspots, videos, and AI-generated audio.
-
 
 
 ## **Overview**
@@ -33,7 +30,6 @@ Interactive Article Studio enables creators to build engaging narrative experien
 ## **Key Features**
 
 ### 3D Scene Management
-
 - **Asset Support**: Import and manage 3D models (GLTF, GLB), Gaussian Splats (.splat), and images  
 - **Visual Effects**: Built-in post-processing effects including bloom, glitch, halftone, and more  
 - **Scene Editor**: Intuitive transform controls (translate, rotate, scale) with visual grid system  
@@ -41,16 +37,14 @@ Interactive Article Studio enables creators to build engaging narrative experien
 
 
 ### Camera Animation System
-
 - **Live Recording** mode: Record camera movements in real-time with frame-perfect capture  
 - **Keyframe Editor**: Manually place camera positions and create interpolated paths
-- - **Path designer** mode: Draw camera path on canvas, define when to start and finish    
+- **Path designer** mode: Draw camera path on canvas, define when to start and finish    
 - **Path Management**: Save, load, and organize multiple camera animations  
 - **Smooth Playback**: 60fps interpolation for cinematic camera movements  
 
 
 ### Scrollytelling Engine
-
 - **Text Overlays**: Rich text editor (Quill.js) with formatting, colors, and image support  
 - **Synchronized Animations**: Link text slides to specific camera path frames  
 - **Multiple Directions**: Configurable text entrance animations (bottom-to-top, left-to-right, etc.)  
@@ -58,22 +52,19 @@ Interactive Article Studio enables creators to build engaging narrative experien
 
 
 ### Image Hotspots
-
 - **Image Integration**: Upload images and add hotspots  
 - **Hotspot Types**:  
-  - **Info (ℹ️)**: Display text information on click  
-  - **Eye (👁️)**: Show detailed images with descriptions  
+  - **Info**: Display text information on click  
+  - **Eye**: Show detailed images with descriptions  
 - **Visual Editor**: Drag-and-drop hotspot placement on uploaded images  
 
 
 ### Scroll-Driven Video
-
 - **Scroll-Based Video**: Videos play frame-by-frame based on scroll  
 - **Multiple Formats**: Support for MP4, WebM, and OGG  
 
 
 ### AI-Powered Audio
-
 - **Text-to-Speech**: Integrated Kokoro TTS engine for natural voice synthesis  
 - **Multiple Voices**: 10+ English voices (US and UK accents)  
 - **Quality Options**: Multiple precision levels (FP32, FP16, Q8, Q4) for speed and accuracy  
@@ -81,7 +72,6 @@ Interactive Article Studio enables creators to build engaging narrative experien
 
 
 ### Article Builder
-
 - **Section Types**:  
   - **Text Sections**: Rich formatted content with customizable backgrounds  
   - **3D Sections**: Embedded camera animations with optional text overlays  
