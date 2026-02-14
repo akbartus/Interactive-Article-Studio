@@ -81,30 +81,8 @@ Interactive Article Studio enables creators to build engaging narrative experien
 - **Drag-to-Reorder**: Flexible section organization  
 - **HTML Export**: Complete standalone interactive article generator with embedded assets  
 
-
-
-## **Technology Stack**
-
-### Frontend
-
-- **A-Frame**: Framework for 3D scene rendering  
-- **Three.js**: Underlying 3D graphics library  
-- **Quill.js**: WYSIWYG rich text editor  
-- **Custom Components**: Specialized A-Frame components for camera recording, scroll animation, video control, etc.  
-
-
-### Backend
-
-- **Node.js + Express**: Server logic  
-- **SQLite3**: Lightweight project database for saving projects  
-- **Kokoro.js**: Text-to-speech AI model  
-
-
-
-## **Export System**
-
+### Article Export
 The export system creates standalone HTML files with:
-
 - Embedded 3D scenes with all assets  
 - Scroll-driven camera animations  
 - Text overlay system with transitions  
@@ -113,17 +91,14 @@ The export system creates standalone HTML files with:
 - All custom A-Frame components inlined  
 - Self-contained output with no external dependencies  
 
+## **Technology Stack**
+Frontend: **A-Frame**: Framework for 3D scene rendering. **Three.js**: Underlying 3D graphics library. **Quill.js**: WYSIWYG rich text editor. **Custom Components**: Specialized A-Frame components for camera recording, scroll animation, video control, gaussian splat rendering, etc.  
+Backend: - **Node.js + Express**: Server logic. **SQLite3**: Lightweight project database for saving projects. **Kokoro.js**: Text-to-speech AI model.
 
 
 ## **Requirements**
-
-- Modern web browser with WebGL 2.0 support (web version)  
+- Modern web browser with WebGL 2.0 support (web version)
 - Minimum 4GB RAM (for TTS model loading)  
-
-
-
-## **Browser Compatibility (Web Version)**
-
 - Chrome / Edge 90+  
 - Firefox 88+  
 - Safari 14.1+  
@@ -164,36 +139,19 @@ Interactive Article Studio.exe
 ```
 
 ## **Changes in ver 0.0.2**
-
-### Fixes
-
 - Fixed Gaussian Splatting rendering bug.  
 - Resolved transparency issues.  
-
-
-### Performance Improvements
-
 - Updated `gaussian-splat-viewer` so performance-critical parts are executed in Web Workers.  
 - Added performance configuration options.  
-
-
-### UI & UX
-
 - Updated **Camera Paths** section design.  
 - Updated audio generation button.  
-
-
-### New Feature
-
 - Added a new camera path option: **Path Designer**.  
   - Draw camera paths manually on the canvas  
   - Supports elevation/height drawing  
   - Enables more precise and interactive camera path control  
 
 
-
 ## **Future Changes**
-
 - Predefined camera paths selector  
 - AI-powered short video generation  
 - Project autosave options  
@@ -210,13 +168,9 @@ Interactive Article Studio.exe
 - Infographics section type in Article Builder  
 
 
-
 ## **License**
-
 MIT  
 
 
-
 ## **Documentation**
-
 Full documentation coming soon.
